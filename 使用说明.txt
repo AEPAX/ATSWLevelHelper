@@ -5,7 +5,13 @@ ATSW专业升级利器 v1.0.0
 
 【重要说明】
 ────────────────────────────────────────────────────────────────────────────
-本插件是AdvancedTradeSkillWindow（ATSW）的增强拓展插件，必须与ATSW一起安装使用。
+本插件是AdvancedTradeSkillWindow（ATSW）的增强拓展插件，必须与ATSW或ATSW2一起安装使用。
+
+【版本兼容】
+────────────────────────────────────────────────────────────────────────────
+✅ 支持 AdvancedTradeSkillWindow 1.x
+✅ 支持 AdvancedTradeSkillWindow2 2.x
+插件会自动检测你安装的版本，无需手动配置！
 
 【功能说明】
 ────────────────────────────────────────────────────────────────────────────
@@ -22,14 +28,14 @@ ATSW专业升级利器 v1.0.0
 
 【安装方法】
 ────────────────────────────────────────────────────────────────────────────
-1. 确保已安装 AdvancedTradeSkillWindow（ATSW）插件
+1. 确保已安装 AdvancedTradeSkillWindow（ATSW）或 AdvancedTradeSkillWindow2（ATSW2）插件
 
 2. 将 ATSWLevelHelper 文件夹复制到：
    World of Warcraft/Interface/AddOns/
 
 3. 启动游戏，在角色选择界面点击"插件"按钮，确认两个插件都已启用
 
-注意：本插件依赖ATSW，必须同时安装才能正常工作！
+注意：本插件依赖ATSW或ATSW2，必须同时安装才能正常工作！
 
 
 【使用方法】

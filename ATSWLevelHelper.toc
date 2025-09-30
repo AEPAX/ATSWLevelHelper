@@ -1,11 +1,11 @@
 ## Interface: 11200
 ## Title: ATSW Level Helper
-## Notes: Enhancement addon for AdvancedTradeSkillWindow, displays recipe skill level thresholds (Orange/Yellow/Green)
+## Notes: Enhancement addon for AdvancedTradeSkillWindow/ATSW2, displays recipe skill level thresholds (Orange/Yellow/Green)
 ## Title-zhCN: |CFF00CD00[商业]|R ATSW专业升级利器
-## Notes-zhCN: |CFF00CD00ATSW增强插件|R|N在配方列表中显示技能等级阈值（橙/黄/绿），已超过的等级显示为灰色。
+## Notes-zhCN: |CFF00CD00ATSW/ATSW2增强插件|R|N在配方列表中显示技能等级阈值（橙/黄/绿），已超过的等级显示为灰色。支持ATSW和ATSW2两个版本。
 ## Author: AEPAX
 ## Version: 1.0.0
-## Dependencies: AdvancedTradeSkillWindow
+## OptionalDeps: AdvancedTradeSkillWindow, AdvancedTradeSkillWindow2
 ## X-Repple: 商业
 ## X-Category: Tradeskill
 

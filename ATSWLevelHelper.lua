@@ -1,16 +1,28 @@
 -- ATSW专业升级利器 v1.0.0
--- AdvancedTradeSkillWindow增强插件，显示配方技能等级阈值（橙/黄/绿）
+-- AdvancedTradeSkillWindow/ATSW2增强插件，显示配方技能等级阈值（橙/黄/绿）
 -- 作者：AEPAX
--- 依赖：AdvancedTradeSkillWindow
+-- 依赖：AdvancedTradeSkillWindow 或 AdvancedTradeSkillWindow2
 
--- 检查依赖插件
-if not ATSW_GetTradeSkillInfo then
-    DEFAULT_CHAT_FRAME:AddMessage("|cFFFF0000ATSW专业升级利器需要AdvancedTradeSkillWindow插件！|r")
+-- 检测ATSW版本
+local ATSW_VERSION = nil
+local BUTTON_PREFIX = nil
+local BUTTON_COUNT = 23
+
+if ATSW_GetTradeSkillInfo then
+    -- ATSW 1.x
+    ATSW_VERSION = "ATSW"
+    BUTTON_PREFIX = "ATSWSkill"
+elseif ATSWFrame then
+    -- ATSW 2.x
+    ATSW_VERSION = "ATSW2"
+    BUTTON_PREFIX = "ATSWRecipe"
+else
+    DEFAULT_CHAT_FRAME:AddMessage("|cFFFF0000ATSW专业升级利器需要AdvancedTradeSkillWindow或AdvancedTradeSkillWindow2插件！|r")
     return
 end
 
 -- 全局变量
-local VERSION = "3.0.0"
+local VERSION = "1.0.0"
 local settings = {
     enabled = true,
     showNumbers = true, -- 显示数字
@@ -196,9 +208,9 @@ local function HookATSWButtonSetText()
         return
     end
 
-    -- Hook所有ATSW技能按钮的SetText方法
-    for i = 1, 23 do
-        local buttonName = "ATSWSkill" .. i
+    -- Hook所有ATSW按钮的SetText方法（支持ATSW和ATSW2）
+    for i = 1, BUTTON_COUNT do
+        local buttonName = BUTTON_PREFIX .. i
         local button = getglobal(buttonName)
         if button and not hookedButtons[buttonName] then
             -- 保存原始SetText方法
@@ -211,38 +223,110 @@ local function HookATSWButtonSetText()
                     return
                 end
 
-                -- 检查是否已经添加过等级信息（避免重复添加）
+                -- 检查文本中是否已经包含我们的等级信息
                 if string.find(text, "|cffff8000") or string.find(text, "●") then
                     originalSetText[buttonName](self, text)
                     return
                 end
 
-                -- 获取按钮对应的实际配方索引
-                local recipeIndex = self:GetID()
-                if not recipeIndex or recipeIndex == 0 then
+                -- 从文本中提取配方名称（移除颜色标签和其他信息）
+                local recipeName = text
+                -- 移除颜色标签
+                recipeName = string.gsub(recipeName, "|c%x%x%x%x%x%x%x%x", "")
+                recipeName = string.gsub(recipeName, "|r", "")
+                -- 移除可能的数量信息 [x/y]
+                recipeName = string.gsub(recipeName, "%s*|c.-|r", "")
+                recipeName = string.gsub(recipeName, "%s*%[.-%]", "")
+                -- 去除首尾空格
+                recipeName = string.gsub(recipeName, "^%s*(.-)%s*$", "%1")
+
+                -- 通过配方名称查找等级信息
+                local professionName = GetCurrentProfessionName()
+                if not professionName or not EnhancedRecipeDatabase then
                     originalSetText[buttonName](self, text)
                     return
                 end
 
-                -- 获取配方信息
-                local skillName, skillType = GetTradeSkillInfo(recipeIndex)
-                if skillName and skillType ~= "header" then
-                    -- 获取等级信息
-                    local levelInfo = GetRecipeLevelInfo(recipeIndex)
-                    if levelInfo ~= "" then
-                        -- 计算需要填充的空格数，使数字靠右对齐
-                        -- 数字部分最多占15个字符（" 30  " + " " + "30  " + " " + "300"）
-                        local nameLength = string.len(text)
-                        local numberLength = 15  -- 预留最大长度
-                        local maxLineLength = 51  -- 一行51个字符（往后挪3位）
-                        local paddingLength = maxLineLength - nameLength - numberLength
+                local recipes = EnhancedRecipeDatabase.recipes[professionName]
+                if not recipes then
+                    originalSetText[buttonName](self, text)
+                    return
+                end
 
-                        if paddingLength > 0 then
-                            local padding = string.rep(" ", paddingLength)
-                            text = text .. padding .. levelInfo
+                -- 遍历配方查找匹配的名称
+                local recipeData = nil
+                for spellID, data in pairs(recipes) do
+                    if data.name_cn == recipeName or data.name_en == recipeName then
+                        recipeData = data
+                        break
+                    end
+                end
+
+                if recipeData then
+                    -- 获取当前专业等级
+                    local currentSkill = GetCurrentProfessionSkill()
+
+                    -- 格式化等级信息
+                    local levelInfo = FormatLevelInfo(recipeData, currentSkill)
+
+                    if levelInfo ~= "" then
+                        -- 根据ATSW版本使用不同的对齐方式
+                        if ATSW_VERSION == "ATSW2" then
+                            -- ATSW2: 使用FontString精确测量宽度
+                            if not measureText then
+                                -- measureText未创建，使用简单的空格
+                                text = text .. "  " .. levelInfo
+                            else
+                                -- 使用隐藏的FontString来测量文本宽度（不影响显示）
+                                -- 测量原始文本宽度（移除颜色标签）
+                                local cleanText = string.gsub(text, "|c%x%x%x%x%x%x%x%x", "")
+                                cleanText = string.gsub(cleanText, "|r", "")
+
+                                measureText:SetText(cleanText)
+                                local textWidth = measureText:GetStringWidth()
+
+                                -- 测量等级信息宽度（移除颜色标签）
+                                local cleanLevelInfo = string.gsub(levelInfo, "|c%x%x%x%x%x%x%x%x", "")
+                                cleanLevelInfo = string.gsub(cleanLevelInfo, "|r", "")
+                                measureText:SetText(cleanLevelInfo)
+                                local levelInfoWidth = measureText:GetStringWidth()
+
+                                -- 测量单个空格宽度
+                                measureText:SetText(" ")
+                                local spaceWidth = measureText:GetStringWidth()
+
+                                -- ATSW2的目标总宽度（文本 + 空格 + 等级信息）
+                                local maxTotalWidth = 260  -- 总宽度限制
+
+                                -- 计算需要的空格数
+                                if spaceWidth > 0 then
+                                    -- 目标：textWidth + padding + levelInfoWidth = maxTotalWidth
+                                    local paddingNeeded = maxTotalWidth - textWidth - levelInfoWidth
+                                    if paddingNeeded > spaceWidth * 2 then  -- 至少2个空格
+                                        local spaceCount = math.floor(paddingNeeded / spaceWidth)
+                                        local padding = string.rep(" ", spaceCount)
+                                        text = text .. padding .. levelInfo
+                                    else
+                                        text = text .. "  " .. levelInfo
+                                    end
+                                else
+                                    text = text .. "  " .. levelInfo
+                                end
+                            end
                         else
-                            -- 如果名称太长，直接添加一个空格
-                            text = text .. " " .. levelInfo
+                            -- ATSW 1.x: 使用原来的字符串长度计算方式
+                            local nameLength = string.len(text)
+                            local numberLength = 15  -- 预留最大长度
+                            local maxLineLength = 51  -- 一行51个字符
+                            local paddingLength = maxLineLength - nameLength - numberLength
+
+                            if paddingLength > 0 then
+                                local padding = string.rep(" ", paddingLength)
+                                text = text .. padding .. levelInfo
+                            else
+                                -- 如果名称太长，直接添加一个空格
+                                text = text .. " " .. levelInfo
+                            end
                         end
                     end
                 end
@@ -253,6 +337,19 @@ local function HookATSWButtonSetText()
 
             hookedButtons[buttonName] = true
         end
+    end
+end
+
+-- 创建一个隐藏的FontString用于测量文本宽度
+local measureFrame = nil
+measureText = nil  -- 全局变量，确保Hook函数能访问
+
+local function CreateMeasureFrame()
+    if not measureFrame then
+        measureFrame = CreateFrame("Frame", "ATSWLevelHelper_MeasureFrame", UIParent)
+        measureFrame:Hide()
+        measureText = measureFrame:CreateFontString(nil, "ARTWORK")
+        measureText:SetFont("Fonts\\FRIZQT__.ttf", 12)  -- 使用与ATSW2相同的字体和大小
     end
 end
 
@@ -267,6 +364,9 @@ local function Initialize()
         DEFAULT_CHAT_FRAME:AddMessage("|cFFFF0000ATSW专业升级利器: 数据库未加载！|r")
         return
     end
+
+    -- 创建测量用的FontString
+    CreateMeasureFrame()
 
     -- Hook ATSW按钮
     HookATSWButtonSetText()
@@ -316,6 +416,8 @@ SlashCmdList["ATSWLEVEL"] = function(msg)
     elseif command == "test" or command == "测试" then
         -- 测试显示功能
         DEFAULT_CHAT_FRAME:AddMessage("=== 测试配方显示功能 ===")
+        DEFAULT_CHAT_FRAME:AddMessage("检测到的ATSW版本: " .. (ATSW_VERSION or "未知"))
+        DEFAULT_CHAT_FRAME:AddMessage("按钮前缀: " .. (BUTTON_PREFIX or "未知"))
 
         local tradeskillName = GetTradeSkillLine()
         if not tradeskillName then
@@ -361,6 +463,7 @@ SlashCmdList["ATSWLEVEL"] = function(msg)
     elseif command == "debug" or command == "调试" then
         -- 调试命令：显示API返回的完整数据
         DEFAULT_CHAT_FRAME:AddMessage("=== 调试：API完整数据 ===")
+        DEFAULT_CHAT_FRAME:AddMessage("检测到的ATSW版本: " .. (ATSW_VERSION or "未知"))
 
         local tradeskillName = GetTradeSkillLine()
         if not tradeskillName then
@@ -424,6 +527,7 @@ SlashCmdList["ATSWLEVEL"] = function(msg)
 
     else
         DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00ATSW专业升级利器 v" .. VERSION .. "|r")
+        DEFAULT_CHAT_FRAME:AddMessage("当前兼容版本: " .. (ATSW_VERSION or "未知"))
         DEFAULT_CHAT_FRAME:AddMessage("/atswlevel toggle - 开关插件")
         DEFAULT_CHAT_FRAME:AddMessage("/atswlevel numbers - 切换数字显示")
         DEFAULT_CHAT_FRAME:AddMessage("/atswlevel test - 测试功能")

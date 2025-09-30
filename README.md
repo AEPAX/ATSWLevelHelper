@@ -1,6 +1,8 @@
 ﻿# ATSW Level Helper
 
-魔兽世界乌龟服专业技能升级辅助插件,为 [AdvancedTradeSkillWindow](https://github.com/refaim/AdvancedTradeSkillWindow) 添加配方等级阈值显示功能。
+魔兽世界乌龟服专业技能升级辅助插件,为 [AdvancedTradeSkillWindow](https://github.com/refaim/AdvancedTradeSkillWindow) 和 AdvancedTradeSkillWindow2 添加配方等级阈值显示功能。
+
+**同时支持 ATSW 1.x 和 ATSW 2.x！**
 
 [中文说明](#中文说明) | [English](#english)
 
@@ -10,12 +12,14 @@
 
 ### Introduction
 
-**ATSW Level Helper** is an addon for Turtle WoW that enhances [AdvancedTradeSkillWindow](https://github.com/refaim/AdvancedTradeSkillWindow) by displaying skill level thresholds (Orange/Yellow/Green) for each recipe, helping you efficiently level your professions.
+**ATSW Level Helper** is an addon for Turtle WoW that enhances [AdvancedTradeSkillWindow](https://github.com/refaim/AdvancedTradeSkillWindow) and AdvancedTradeSkillWindow2 by displaying skill level thresholds (Orange/Yellow/Green) for each recipe, helping you efficiently level your professions.
+
+**Supports both ATSW 1.x and ATSW 2.x!** The addon automatically detects which version you have installed.
 
 ### Requirements
 
 - **Turtle WoW**
-- **AdvancedTradeSkillWindow** addon
+- **AdvancedTradeSkillWindow** or **AdvancedTradeSkillWindow2** addon
 
 ### Files
 
@@ -40,9 +44,9 @@
 
 ### Usage
 
-1. Install both **AdvancedTradeSkillWindow** and **ATSWLevelHelper**
+1. Install **AdvancedTradeSkillWindow** or **AdvancedTradeSkillWindow2** and **ATSWLevelHelper**
 2. Open any tradeskill window
-3. Level thresholds will appear next to each recipe name
+3. Level thresholds (Orange/Yellow/Green) will appear next to each recipe name
 
 
 ### Commands
@@ -59,12 +63,14 @@
 
 ### 简介
 
-**ATSW Level Helper** 是魔兽世界乌龟服的专业技能辅助插件,为 [AdvancedTradeSkillWindow](https://github.com/refaim/AdvancedTradeSkillWindow) 添加配方等级阈值显示,帮助你高效冲专业等级。
+**ATSW Level Helper** 是魔兽世界乌龟服的专业技能辅助插件,为 [AdvancedTradeSkillWindow](https://github.com/refaim/AdvancedTradeSkillWindow) 和 AdvancedTradeSkillWindow2 添加配方等级阈值显示,帮助你高效冲专业等级。
+
+**同时支持 ATSW 1.x 和 ATSW 2.x！** 插件会自动检测你安装的版本。
 
 ### 系统要求
 
 - **魔兽世界乌龟服**
-- **AdvancedTradeSkillWindow** 插件
+- **AdvancedTradeSkillWindow** 或 **AdvancedTradeSkillWindow2** 插件
 
 ### 文件说明
 
@@ -89,9 +95,9 @@
 
 ### 使用方法
 
-1. 安装 **AdvancedTradeSkillWindow** 和 **ATSWLevelHelper** 两个插件
+1. 安装 **AdvancedTradeSkillWindow** 或 **AdvancedTradeSkillWindow2** 和 **ATSWLevelHelper** 两个插件
 2. 打开任意专业技能窗口
-3. 配方名称后会自动显示等级阈值
+3. 配方名称后会自动显示等级阈值（橙/黄/绿）
 
 
 ### 命令
